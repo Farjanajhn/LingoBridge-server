@@ -28,7 +28,15 @@ async function run() {
     await client.connect();
 
     const instructorCollection = client.db("lingoDb").collection("instructors");
+    const classCollection = client.db("lingoDb").collection("classes");
 
+    //classes
+    app.get('/classes', async (req, res) => {
+      const result = await classCollection.find().limit(6).toArray();
+      res.send(result);
+    })
+    
+    //instructors
     app.get('/instructors', async (req, res) => {
       const result = await instructorCollection.find().toArray();
       res.send(result);
