@@ -32,7 +32,11 @@ async function run() {
 
     //classes
     app.get('/classes', async (req, res) => {
-      const result = await classCollection.find().limit(6).toArray();
+      const query = {};
+      const options = {
+        sort:{"student":-1}
+      }
+      const result = await classCollection.find(query,options).limit(6).toArray();
       res.send(result);
     })
     
