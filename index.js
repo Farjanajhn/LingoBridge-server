@@ -29,6 +29,8 @@ async function run() {
 
     const instructorCollection = client.db("lingoDb").collection("instructors");
     const classCollection = client.db("lingoDb").collection("classes");
+    const cartCollection = client.db("lingoDb").collection("carts");
+    
 
     //classes
     app.get('/classes', async (req, res) => {
@@ -45,6 +47,26 @@ async function run() {
       const result = await instructorCollection.find().toArray();
       res.send(result);
     })
+
+
+    //cart collection
+    app.get('/carts', async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        res.send([])
+      }
+      const query = { email: email }
+      const result = await cartCollection.find(query).toArray();
+      res.send(result)
+    });
+    app.post('/carts', async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await cartCollection.insertOne(item);
+      res.send(result);
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
