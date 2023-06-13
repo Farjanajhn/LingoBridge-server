@@ -28,9 +28,17 @@ async function run() {
     await client.connect();
 
     const instructorCollection = client.db("lingoDb").collection("instructors");
+    const usersCollection = client.db("lingoDb").collection("users");
     const classCollection = client.db("lingoDb").collection("classes");
     const cartCollection = client.db("lingoDb").collection("carts");
     
+    //users related api
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+      
+    })
 
     //classes
     app.get('/classes', async (req, res) => {
