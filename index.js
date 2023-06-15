@@ -101,6 +101,18 @@ async function run() {
       const result = { admin: user?.role === 'admin' }
       res.send(result);
     })
+
+    //instructor
+    app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      if (req.decoded.email !== email) {
+        return res.send({instructor:false})
+      }
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      const result = { instructor: user?.role === 'instructor' }
+      res.send(result);
+    })
  
 
 
@@ -136,6 +148,14 @@ async function run() {
       const result = await classCollection.find(query,options).limit(6).toArray();
       res.send(result);
     })
+
+    app.post('/classes', async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await classCollection.insertOne(item);
+      res.send(result);
+    })
+
     
     //instructors
     app.get('/instructors', async (req, res) => {
@@ -178,6 +198,8 @@ async function run() {
       const result = await cartCollection.deleteOne(query);
       res.send(result);
     })
+
+    
 
 
     // Send a ping to confirm a successful connection
