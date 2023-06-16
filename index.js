@@ -91,6 +91,13 @@ async function run() {
       
     })
 
+    app.get('/instructorsList', async (req, res) => {
+      const query = { role: 'instructor' };
+    
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
@@ -116,6 +123,7 @@ async function run() {
  
 
 
+    //admin patch
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -127,6 +135,8 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result)
     })
+
+    //instructor patch
     app.patch('/users/instructor/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -139,6 +149,32 @@ async function run() {
       res.send(result)
     })
 
+    //make approve
+    app.patch('/classes/approve/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status:'approve'
+        }
+      }
+      const result = await classCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
+    // make deny
+    app.patch('/users/deny/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status:'deny'
+        }
+      }
+      const result = await classCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
     //classes
     app.get('/classes', async (req, res) => {
       const query = {};
@@ -148,6 +184,32 @@ async function run() {
       const result = await classCollection.find(query,options).limit(6).toArray();
       res.send(result);
     })
+
+    //my class for admin page
+
+    app.get('/manageClasses', async (req, res) => {
+      const query = { status: 'pending' };
+    
+      const result = await classCollection.find(query).toArray();
+      res.send(result);
+    });
+     
+
+    //my class for instructor page
+    app.get('/myClass', async (req, res) => {
+      console.log(req.query.email) 
+      let query = {}; 
+       if (req.query?.email) {
+         query = {email:req.query.email}
+       } 
+      const cursor = classCollection.find(query);
+   /*    sortBy({createAt:1}) */
+       const result = await cursor.toArray();
+        res.send(result); 
+    /*  console.log(result);  */
+       
+    }) 
+     
 
     app.post('/classes', async (req, res) => {
       const item = req.body;
@@ -162,6 +224,9 @@ async function run() {
       const result = await instructorCollection.find().toArray();
       res.send(result);
     })
+
+ 
+     
 
 
     //cart collection
